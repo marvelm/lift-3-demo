@@ -26,7 +26,7 @@ trait JsonConverter[OwnerType <: Mapper[OwnerType] with IdPK] extends MetaMapper
       val obj = tryo { decodeFromJSON_!(j, false) }
       println("IS JObject: "+obj)
       obj match {
-        case Failure(msg, Full(ex), _) => ex.printStackTrace() 
+        case Failure(msg, Full(ex), _) => ex.printStackTrace()
         case _ =>
       }
       obj.flatMap(o => if (o.id.get > 0) findById(o.id.get).map(db => copyChanges(db, o)) else Full(o))
@@ -92,7 +92,7 @@ class Todo private() extends LongKeyedMapper[Todo] with IdPK with UserId[Todo] w
   }
 
   object dueDate extends MappedDateTime(this) {
-    override def defaultValue = 1.day later
+    override def defaultValue = 1.day.later.toDate
     override def displayName = "Due"
     override def toFormAppendedAttributes = new UnprefixedAttribute("class", "form-control", super.toFormAppendedAttributes)
   }

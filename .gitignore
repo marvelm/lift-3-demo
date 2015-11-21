@@ -4,3 +4,4 @@ lift_proto.db.trace.db
 /.cache
 /.classpath
 /.project
+.idea
