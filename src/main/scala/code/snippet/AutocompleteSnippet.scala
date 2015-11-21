@@ -21,7 +21,7 @@ object AutocompleteSnippet {
     def findSuggestions(): JsCmd = {
       def search2(jvalue: JValue): JValue = {
         val JString(term) = jvalue \ "term"
-        val words = Languages.l.filter(_.toLowerCase startsWith term.toLowerCase())
+        val words = Languages.l.filter(_.toLowerCase startsWith term.toLowerCase)
         words.sorted
       }
       Function("findSuggestions_callback", List("term", "callback"),
@@ -62,9 +62,9 @@ object AutocompleteSnippet {
     // If an exception is thrown during the save, the client automatically
     // gets a Failure
     def doFind(param: JValue): JValue = {
-      val queryOpt = (for { JString(query) <- (param \ "q") } yield query).headOption
+      val queryOpt = (for (JString(query) <- param \ "q") yield query).headOption
       for (query <- queryOpt) yield {
-        Languages.l.filter(_.toLowerCase startsWith query.toLowerCase()).sorted
+        Languages.l.filter(_.toLowerCase startsWith query.toLowerCase).sorted
       }
     }
 

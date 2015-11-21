@@ -13,7 +13,6 @@ function WpSuggestionsCtrl($scope, $http) {
     $http.get(url).success(function (data) {
       $scope.suggestions = data;
     });
-    $scope.wpQuery = "";
   };
 
 }
