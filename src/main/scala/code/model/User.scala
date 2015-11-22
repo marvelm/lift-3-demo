@@ -1,5 +1,7 @@
 package code.model
 
+import java.io.{ObjectInputStream, ByteArrayInputStream, ByteArrayOutputStream, ObjectOutputStream}
+
 import org.joda.time.DateTime
 import net.liftweb._
 import net.liftweb.common._
@@ -9,13 +11,7 @@ import net.liftweb.util.Mailer.PlainMailBodyType
 import net.liftweb.util.Mailer.Subject
 import net.liftweb.util.Mailer.To
 import net.liftweb.util.Mailer.sendMail
-import net.liftweb.http.LiftResponse
-import net.liftweb.http.RedirectWithState
-import net.liftweb.http.RedirectState
-import net.liftweb.http.Req
-import net.liftweb.http.SessionVar
-import net.liftweb.http.S
-import net.liftweb.http.RedirectResponse
+import net.liftweb.http._
 import net.liftweb.mapper.By
 import net.liftmodules.mapperauth.ProtoAuthUser
 import net.liftweb.mapper.MappedLocale
@@ -36,18 +32,21 @@ import scala.xml.UnprefixedAttribute
  */
 trait UserId[OwnerType <: UserId[OwnerType]] extends Mapper[OwnerType] {
   self: OwnerType =>
+
   object userId extends MappedLongForeignKey(this, User) {
     override def dbIndexed_? = true
   }
+
 }
 
-class User private () extends ProtoAuthUser[User] {
+class User private() extends ProtoAuthUser[User] {
   def getSingleton = User
 
-  override def userIdAsString: String = id.toString
+  override def userIdAsString = id.toString
 
   object locale extends MappedLocale(this) {
     override def displayName = "Locale"
+
     override def defaultValue = "en_US"
 
     override def toFormAppendedAttributes = new UnprefixedAttribute("class", "form-control", super.toFormAppendedAttributes)
@@ -55,7 +54,9 @@ class User private () extends ProtoAuthUser[User] {
 
   object timezone extends MappedTimeZone(this) {
     override def displayName = "Time Zone"
+
     override def defaultValue = "America/Chicago"
+
     override def toFormAppendedAttributes = new UnprefixedAttribute("class", "form-control", super.toFormAppendedAttributes)
   }
 
@@ -64,7 +65,7 @@ class User private () extends ProtoAuthUser[User] {
 
     override def validations =
       valMaxLen(64, "Name must be 64 characters or less") _ ::
-      super.validations
+        super.validations
 
     override def toFormAppendedAttributes = new UnprefixedAttribute("class", "form-control", super.toFormAppendedAttributes)
   }
@@ -74,17 +75,18 @@ class User private () extends ProtoAuthUser[User] {
 
     override def validations =
       valMaxLen(64, "Location must be 64 characters or less") _ ::
-      super.validations
+        super.validations
 
     override def toFormAppendedAttributes = new UnprefixedAttribute("class", "form-control", super.toFormAppendedAttributes)
 
   }
+
   object bio extends MappedTextarea(this, 160) {
     override def displayName = "Bio"
 
     override def validations =
       valMaxLen(160, "Bio must be 160 characters or less") _ ::
-      super.validations
+        super.validations
 
     override def toFormAppendedAttributes = new UnprefixedAttribute("class", "form-control", super.toFormAppendedAttributes)
   }
@@ -106,9 +108,9 @@ class User private () extends ProtoAuthUser[User] {
 
   def whenCreated: DateTime = new DateTime(createdAt.get)
 
-//  override def authRoles: Set[String] = {
-//    userRoles.names.toSet
-//  }
+  //  override def authRoles: Set[String] = {
+  //    userRoles.names.toSet
+  //  }
 
 
 }
@@ -121,10 +123,11 @@ object User extends User with ProtoAuthUserMeta[User] with Loggable {
 
   override def dbTableName = "users"
 
-//  ensureIndex((email.name -> 1), true)
-//  ensureIndex((username.name -> 1), true)
+  //  ensureIndex((email.name -> 1), true)
+  //  ensureIndex((username.name -> 1), true)
 
   def findByEmail(in: String): Box[User] = find(By(email, in))
+
   def findByUsername(in: String): Box[User] = find(By(username, in))
 
   def findByStringId(strId: String): Box[User] =
@@ -135,7 +138,7 @@ object User extends User with ProtoAuthUserMeta[User] with Loggable {
     }
 
   override def onLogIn: List[User => Unit] = List(
-      user => User.loginCredentials.remove()
+    user => User.loginCredentials.remove()
   )
 
   override def onLogOut: List[Box[User] => Unit] = List(
@@ -148,25 +151,27 @@ object User extends User with ProtoAuthUserMeta[User] with Loggable {
   /*
    * Lift Bootstrap Auth vars
    */
-  private lazy val siteName           = MapperAuth.siteName.vend
-  private lazy val sysUsername        = MapperAuth.systemUsername.vend
-  private lazy val indexUrl           = MapperAuth.indexUrl.vend
-  private lazy val registerUrl        = MapperAuth.registerUrl.vend
+  private lazy val siteName = MapperAuth.siteName.vend
+  private lazy val sysUsername = MapperAuth.systemUsername.vend
+  private lazy val indexUrl = MapperAuth.indexUrl.vend
+  private lazy val registerUrl = MapperAuth.registerUrl.vend
   private lazy val loginTokenAfterUrl = MapperAuth.loginTokenAfterUrl.vend
 
   /*
    * LoginToken
    */
-  override def handleLoginToken: Box[LiftResponse] = {
+  override def handleLoginToken(): Box[LiftResponse] = {
     val resp = S.param("token").flatMap(LoginToken.findByStringId) match {
-      case Full(at) if (at.expires.isExpired) => {
+      case Full(at) if at.expires.isExpired => {
         at.delete_!
-        RedirectWithState(indexUrl, RedirectState(() => { S.error("Login token has expired") }))
+        RedirectWithState(indexUrl, RedirectState(() => {
+          S.error("Login token has expired")
+        }))
       }
       case Full(at) => find(at.userId.get).map(user => {
-        if (user.validate.length == 0) {
+        if (user.validate.isEmpty) {
           user.verified(true)
-          user.save
+          user.save()
           logUserIn(user)
           at.delete_!
           RedirectResponse(loginTokenAfterUrl)
@@ -174,10 +179,16 @@ object User extends User with ProtoAuthUserMeta[User] with Loggable {
         else {
           at.delete_!
           regUser(user)
-          RedirectWithState(registerUrl, RedirectState(() => { S.notice("Please complete the registration form") }))
+          RedirectWithState(registerUrl, RedirectState(() => {
+            S.notice("Please complete the registration form")
+          }))
         }
-      }).openOr(RedirectWithState(indexUrl, RedirectState(() => { S.error("User not found") })))
-      case _ => RedirectWithState(indexUrl, RedirectState(() => { S.warning("Login token not provided") }))
+      }).openOr(RedirectWithState(indexUrl, RedirectState(() => {
+        S.error("User not found")
+      })))
+      case _ => RedirectWithState(indexUrl, RedirectState(() => {
+        S.warning("Login token not provided")
+      }))
     }
 
     Full(resp)
@@ -223,7 +234,7 @@ object User extends User with ProtoAuthUserMeta[User] with Loggable {
     ignoredReq => {
       if (currentUserId.isEmpty) {
         ExtSession.handleExtSession match {
-          case Full(es) => find(es.userId.get).foreach { user => logUserIn(user, false) }
+          case Full(es) => find(es.userId.get).foreach { user => logUserIn(user, isAuthed = false) }
           case Failure(msg, _, _) => logger.warn("Error logging user in with ExtSession: %s".format(msg))
           case Empty =>
         }
@@ -231,13 +242,31 @@ object User extends User with ProtoAuthUserMeta[User] with Loggable {
     }
   }
 
-  // used during login process
-  object loginCredentials extends SessionVar[LoginCredentials](LoginCredentials(""))
-  object regUser extends SessionVar[User](create.email(loginCredentials.is.email))
+  implicit val LoginCredentialsSerializer = new DefaultContainerSerializer[LoginCredentials]
+  implicit val UserSerializer = new DefaultContainerSerializer[User]
 
+  // used during login process
+  object loginCredentials extends ContainerVar[LoginCredentials](LoginCredentials(""))
+
+  object regUser extends ContainerVar[User](create.email(loginCredentials.is.email))
 }
 
-case class LoginCredentials(val email: String, val isRememberMe: Boolean = false)
+class DefaultContainerSerializer[T] extends ContainerSerializer[T] {
+  override def serialize(in: T): Array[Byte] = {
+    val bos = new ByteArrayOutputStream()
+    val out = new ObjectOutputStream(bos)
+    out.writeObject(in)
+    bos.toByteArray
+  }
+
+  override def deserialize(in: Array[Byte]): T = {
+    val bis = new ByteArrayInputStream(in)
+    val ois = new ObjectInputStream(bis)
+    ois.readObject().asInstanceOf[T]
+  }
+}
+
+case class LoginCredentials(email: String, isRememberMe: Boolean = false)
 
 object SystemUser {
   private val username = "lbs20"
@@ -252,7 +281,7 @@ object SystemUser {
       .timezone("America/Chicago")
       .verified(true)
       .password("abc123") // TODO: set me
-      .saveMe
+      .saveMe()
   }
 }
 
