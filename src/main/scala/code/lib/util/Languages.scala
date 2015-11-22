@@ -1,7 +1,6 @@
 package code.lib.util
 
 object Languages {
-
   /*
    * Source: Wikipedia
    */
@@ -676,6 +675,4 @@ object Languages {
 	"Zeno (programming language)",
 	"ZOPL",
 	"ZPL (programming language)")
-
-
 }

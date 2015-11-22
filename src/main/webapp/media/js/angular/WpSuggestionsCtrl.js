@@ -1,19 +1,19 @@
 function WpSuggestionsCtrl($scope, $http) {
-  $scope.suggestions = [];
-  $scope.wpQuery = "";
+    $scope.suggestions = [];
+    $scope.wpQuery = "";
 
-/*
-  [{suggestion:'learn angular', link:'http://www.scaladays.org'}, {...}]
- */
+    /*
+     [{suggestion:'learn angular', link:'http://www.scaladays.org'}, {...}]
+     */
 
-  var serviceUrl = "/search/";
+    var serviceUrl = "/search/";
 
-  $scope.getSuggestions = function() {
-    var url = serviceUrl + $scope.wpQuery;
-    $http.get(url).success(function (data) {
-      $scope.suggestions = data;
-    });
-  };
+    $scope.getSuggestions = function () {
+        var url = serviceUrl + $scope.wpQuery;
+        $http.get(url).success(function (data) {
+            $scope.suggestions = data;
+        });
+    };
 
 }
 

@@ -1,158 +1,161 @@
 <div data-lift="surround?with=base-wrap;at=content">
-  <head_merge>
-    <title lift="Menu.title">Lift 3 Demo: %*%</title>
-    <script>
-      $(document).ready(function() {
-        $( "#query_cb" ).autocomplete({
-          minLength: 2,
-          delay: 200,
-          source: function( request, response ) {
-            var term = request.term;
-            findSuggestions_callback(term, response);
-          }
-        });
+    <head_merge>
+        <title lift="Menu.title">Lift 3 Demo: %*%</title>
+        <script>
+            $(document).ready(function () {
+                $("#query_cb").autocomplete({
+                    minLength: 2,
+                    delay: 200,
+                    source: function (request, response) {
+                        var term = request.term;
+                        findSuggestions_callback(term, response);
+                    }
+                });
 
-        $( "#query_rt" ).autocomplete({
-          minLength: 2,
-          delay: 200,
-          source: function( request, response ) {
-            var term = request.term;
-            findSuggestions.find(term).then(response);
-          }
-        });
+                $("#query_rt").autocomplete({
+                    minLength: 2,
+                    delay: 200,
+                    source: function (request, response) {
+                        var term = request.term;
+                        findSuggestions.find(term).then(response);
+                    }
+                });
 
-        // $( "#typeahead_rt" ).typeahead({
-          // minLength: 2,
-          // source: function( query, process ) {
-            // findSuggestions_typeahead.find({q: query}).then(process);
-          // }
-        // });
+                // $( "#typeahead_rt" ).typeahead({
+                // minLength: 2,
+                // source: function( query, process ) {
+                // findSuggestions_typeahead.find({q: query}).then(process);
+                // }
+                // });
 
-        $('#streaming-search-btn').click(function(){
-          var query = $('#query_streaming').val();
-          $('#streaming-search-result').html('');
-          streamingPromise.find(query).then(function(response){
-            $('#streaming-search-result').append('<li>'+response+'</li>');
-          });
-        });
+                $('#streaming-search-btn').click(function () {
+                    var query = $('#query_streaming').val();
+                    $('#streaming-search-result').html('');
+                    streamingPromise.find(query).then(function (response) {
+                        $('#streaming-search-result').append('<li>' + response + '</li>');
+                    });
+                });
 
-      });
-    </script>
+            });
+        </script>
 
-  </head_merge>
-  <div class="main-content">
-    <div lift="Notices"></div>
+    </head_merge>
+    <div class="main-content">
+        <div lift="Notices"></div>
 
-    <div class="tabbable"> <!-- Only required for left/right tabs -->
-      <ul class="nav nav-pills">
-        <li class="active"><a href="#pane-jquery" data-toggle="tab">Standard Autocomplete</a></li>
-        <li><a href="#pane-promises" data-toggle="tab">Roundtrip Promise</a></li>
-        <li><a href="#pane-streaming-promises" data-toggle="tab">Streaming Promises</a></li>
-      </ul>
+        <div class="tabbable"> <!-- Only required for left/right tabs -->
+            <ul class="nav nav-pills">
+                <li class="active"><a href="#pane-jquery" data-toggle="tab">Standard Autocomplete</a></li>
+                <li><a href="#pane-promises" data-toggle="tab">Roundtrip Promise</a></li>
+                <li><a href="#pane-streaming-promises" data-toggle="tab">Streaming Promises</a></li>
+            </ul>
 
-      <div class="tab-content">
+            <div class="tab-content">
 
-        <div class="tab-pane active" id="pane-jquery">
-          <!-- jQuery autocomplete with Ajax function with callback -->
-          <div class="hero-unit" lift="AutocompleteSnippet.callback">
-            <div class="inner" style="text-align: center">
-              <h2>jQuery Callback Autocomplete</h2>
-              <form class="input-append" style="width:100%">
-                <div class="row search-box">
-                  <div class="col-md-6 col-md-offset-3">
-                    <div class="input-group">
-                      <input id="query_cb" type="text" class="form-control">
+                <div class="tab-pane active" id="pane-jquery">
+                    <!-- jQuery autocomplete with Ajax function with callback -->
+                    <div class="hero-unit" lift="AutocompleteSnippet.callback">
+                        <div class="inner" style="text-align: center">
+                            <h2>jQuery Callback Autocomplete</h2>
+
+                            <form class="input-append" style="width:100%">
+                                <div class="row search-box">
+                                    <div class="col-md-6 col-md-offset-3">
+                                        <div class="input-group">
+                                            <input id="query_cb" type="text" class="form-control">
                       <span class="input-group-btn">
                         <button id="cb-search-btn" class="btn btn-primary" type="submit">
-                          <i class="icon-search icon-large"></i>
+                            <i class="icon-search icon-large"></i>
                         </button>
                       </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </form>
-            </div>
-          </div>
-        </div>
 
-        <div class="tab-pane" id="pane-promises">
-          <!-- jQuery autocomplete with Lift 3 roundtrip -->
-          <div class="hero-unit" lift="AutocompleteSnippet.roundTrip">
-            <div class="inner" style="text-align: center">
-              <h2>jQuery Roundtrip Autocomplete</h2>
-              <form class="input-append" style="width:100%">
-                <div class="row search-box">
-                  <div class="col-md-6 col-md-offset-3">
-                    <div class="input-group">
-                      <input id="query_rt" type="text" class="form-control">
+                <div class="tab-pane" id="pane-promises">
+                    <!-- jQuery autocomplete with Lift 3 roundtrip -->
+                    <div class="hero-unit" lift="AutocompleteSnippet.roundTrip">
+                        <div class="inner" style="text-align: center">
+                            <h2>jQuery Roundtrip Autocomplete</h2>
+
+                            <form class="input-append" style="width:100%">
+                                <div class="row search-box">
+                                    <div class="col-md-6 col-md-offset-3">
+                                        <div class="input-group">
+                                            <input id="query_rt" type="text" class="form-control">
                       <span class="input-group-btn">
                         <button id="rt-search-btn" class="btn btn-primary" type="submit">
-                          <i class="icon-search icon-large"></i>
+                            <i class="icon-search icon-large"></i>
                         </button>
                       </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </form>
-            </div>
-          </div>
-        </div>
 
-        <div class="tab-pane" id="pane-streaming-promises">
-          <div class="hero-unit" lift="StreamingPromise">
-            <div class="inner" style="text-align: center">
-              <h2>Something that streams</h2>
-              <div class="input-append" style="width:100%">
-                <div class="row search-box">
-                  <div class="col-md-6 col-md-offset-3">
-                    <div class="input-group">
-                      <input id="query_streaming" type="text" class="form-control">
+                <div class="tab-pane" id="pane-streaming-promises">
+                    <div class="hero-unit" lift="StreamingPromise">
+                        <div class="inner" style="text-align: center">
+                            <h2>Something that streams</h2>
+
+                            <div class="input-append" style="width:100%">
+                                <div class="row search-box">
+                                    <div class="col-md-6 col-md-offset-3">
+                                        <div class="input-group">
+                                            <input id="query_streaming" type="text" class="form-control">
                       <span class="input-group-btn">
                         <button id="streaming-search-btn" class="btn btn-primary" type="button">
-                          <i class="icon-search icon-large"></i>
+                            <i class="icon-search icon-large"></i>
                         </button>
                       </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div style="margin-top:30px;">
-              <h4>Streaming promise result appears here</h4>
-              <ul id="streaming-search-result">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:30px;">
+                            <h4>Streaming promise result appears here</h4>
+                            <ul id="streaming-search-result">
 
-              </li>
-            </div>
-          </div>
-        </div>
-<!--
-        <div class="tab-pane" id="pane-typeahead">
-          <! -- Bootstrap Typeahead with Lift 3 roundtrip -- >
-          <div class="hero-unit" lift="AutocompleteSnippet.typeAheadRoundTrip">
-            <div class="inner" style="text-align: center">
-              <h2>Bootstrap Typeahead Roundtrip Autocomplete</h2>
-              <form class="input-append" style="width:100%">
-                <div class="row search-box">
-                  <div class="col-md-6 col-md-offset-3">
-                    <div class="input-group">
-                      <input id="typeahead_rt" type="text" class="form-control">
-                      <span class="input-group-btn">
-                        <button id="search-btn" class="btn btn-primary" type="submit">
-                          <i class="icon-search icon-large"></i>
-                        </button>
-                      </span>
+                                </li>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </form>
-            </div>
-          </div>
-        </div>
--->
+                <!--
+                        <div class="tab-pane" id="pane-typeahead">
+                          <! -- Bootstrap Typeahead with Lift 3 roundtrip -- >
+                          <div class="hero-unit" lift="AutocompleteSnippet.typeAheadRoundTrip">
+                            <div class="inner" style="text-align: center">
+                              <h2>Bootstrap Typeahead Roundtrip Autocomplete</h2>
+                              <form class="input-append" style="width:100%">
+                                <div class="row search-box">
+                                  <div class="col-md-6 col-md-offset-3">
+                                    <div class="input-group">
+                                      <input id="typeahead_rt" type="text" class="form-control">
+                                      <span class="input-group-btn">
+                                        <button id="search-btn" class="btn btn-primary" type="submit">
+                                          <i class="icon-search icon-large"></i>
+                                        </button>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                -->
 
-      </div>
+            </div>
+        </div>
+
     </div>
-
-  </div>
-  <span data-lift="embed?what=/templates-hidden/parts/footer"></span>
+    <span data-lift="embed?what=/templates-hidden/parts/footer"></span>
 </div>

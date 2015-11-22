@@ -17,15 +17,16 @@ import code.lib.util.Languages
 object AutocompleteSnippet {
 
   def callback(in: NodeSeq): NodeSeq = {
-
     def findSuggestions(): JsCmd = {
       def search2(jvalue: JValue): JValue = {
         val JString(term) = jvalue \ "term"
         val words = Languages.l.filter(_.toLowerCase startsWith term.toLowerCase)
         words.sorted
       }
-      Function("findSuggestions_callback", List("term", "callback"),
-        SHtml.jsonCall(JsRaw("""{'term': term}"""), AjaxContext.json(Full("callback")), search2 _)._2)
+      Function(
+        "findSuggestions_callback",
+        List("term", "callback"),
+        SHtml.jsonCall(JsRaw( """{'term': term}"""), AjaxContext.json(Full("callback")), search2 _)._2)
     }
 
     in ++ Script(findSuggestions)
@@ -47,7 +48,7 @@ object AutocompleteSnippet {
     // Associate the server functions with client-side functions
     for (sess <- S.session) {
       val script = JsCrVar("findSuggestions",
-                   sess.buildRoundtrip(List[RoundTripInfo]("find" -> doFind _)))
+        sess.buildRoundtrip(List[RoundTripInfo]("find" -> doFind _)))
       S.appendGlobalJs(script)
     }
 
@@ -72,7 +73,7 @@ object AutocompleteSnippet {
     // Associate the server functions with client-side functions
     for (sess <- S.session) {
       val script = JsCrVar("findSuggestions_typeahead",
-                   sess.buildRoundtrip(List[RoundTripInfo]("find" -> doFind _)))
+        sess.buildRoundtrip(List[RoundTripInfo]("find" -> doFind _)))
 
       S.appendGlobalJs(script)
     }
